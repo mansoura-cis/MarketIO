@@ -14,6 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\MarketIO.Contracts\MarketIO.Contracts.csproj" />
     <ProjectReference Include="..\MarketIO.DAL\MarketIO.DAL.csproj" />
   </ItemGroup>
 

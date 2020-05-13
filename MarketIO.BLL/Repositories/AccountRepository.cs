@@ -3,6 +3,9 @@ using System;
 using System.Threading.Tasks;
 using MarketIO.DAL.Domain;
 using MarketIO.DAL.Repositories;
+using System.Security.Cryptography.X509Certificates;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace MarketIO.BLL.Repositories
 {
@@ -71,6 +74,20 @@ namespace MarketIO.BLL.Repositories
             Customer.Image = ImagePath;
             var result = await _userManager.UpdateAsync(Customer);
             return result.Succeeded;
+        }
+
+        public async Task<(Customers, IEnumerable<string>)> CheckAuthority(string email, string password)
+        {
+            var Customer = await _userManager.FindByEmailAsync(email);
+            if (Customer!=null)
+            {
+               var result = await _signInManager.CheckPasswordSignInAsync(Customer, password, false);
+                if (result.Succeeded)
+                {
+                    return (Customer, await _userManager.GetRolesAsync(Customer));
+                }
+            }
+            return (null, null);
         }
     }
 }

@@ -42,10 +42,6 @@ namespace MarketIO.API
             }
 
             app.UseHttpsRedirection();
-            app.UseCors("EnableCors");
-            app.UseRouting();
-            app.UseAuthorization();
-            app.UseAuthorization();
             var swaggerSettings = new SwaggerSettings();
             Configuration.GetSection(nameof(SwaggerSettings)).Bind(swaggerSettings);
             app.UseSwagger(options =>
@@ -60,6 +56,10 @@ namespace MarketIO.API
                 options.DocumentTitle = "MarketIO";
                 options.DocExpansion(DocExpansion.None);
             });
+            app.UseCors("EnableCors");
+            app.UseRouting();
+            app.UseAuthorization();
+            app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

@@ -6,14 +6,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Controllers\V1\API\**" />
     <Compile Remove="Profiles\**" />
+    <Content Remove="Controllers\V1\API\**" />
     <Content Remove="Profiles\**" />
+    <EmbeddedResource Remove="Controllers\V1\API\**" />
     <EmbeddedResource Remove="Profiles\**" />
+    <None Remove="Controllers\V1\API\**" />
     <None Remove="Profiles\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Controllers\V1\API\" />
   </ItemGroup>
 
   <ItemGroup>

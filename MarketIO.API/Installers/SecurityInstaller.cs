@@ -1,4 +1,7 @@
-﻿using MarketIO.API.Settings;
+﻿using MarketIO.API.Auth;
+using MarketIO.API.Settings;
+using MarketIO.BLL.Repositories;
+using MarketIO.DAL.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,19 +20,28 @@ namespace MarketIO.API.Installers
 
             services.AddAuthentication(schemes =>
             {
+                schemes.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
                 schemes.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 schemes.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             }).AddJwtBearer(options => {
+                options.SaveToken = true;
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
+                    ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(key),
                     ValidateIssuer = true,
                     ValidateAudience = true, 
                     ValidIssuer = jwtSettings.Issuer,
+                    ValidateLifetime=true,
                     ValidAudience = jwtSettings.Audience
                 };
             
             });
+
+            services.AddAuthorization();
+
+
+
         }
     }
 }

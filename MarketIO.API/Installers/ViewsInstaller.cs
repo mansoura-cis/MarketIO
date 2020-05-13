@@ -16,7 +16,9 @@ namespace MarketIO.API.Installers
             var swaggerSettings = new SwaggerSettings();
             configuration.GetSection(nameof(SwaggerSettings)).Bind(swaggerSettings);
             services.AddSwaggerGen(settings => {
-                var security = new  OpenApiSecurityRequirement();
+                var security = new OpenApiSecurityRequirement() { 
+                    
+                };
                 var securityScheme = new OpenApiSecurityScheme()
                 {
                     Description = "Using Bearer Authorization",

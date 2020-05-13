@@ -7,26 +7,15 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 
 
-namespace MarketIO.MVC.Instrallers
+namespace MarketIO.API.Installers
 {
     public class DataInstaller : IInstaller
     {
         public void InstallServices(IServiceCollection services, IConfiguration configuration)
         {
-            #region Caching
-            services.AddDistributedMemoryCache();
-
-            services.AddSession(options => {
-                options.IdleTimeout = TimeSpan.FromHours(10);
-                options.Cookie.HttpOnly = true;
-                options.Cookie.IsEssential = true;
-            });
-            #endregion
-
-            #region Database 
             services.AddDbContext<MarketIODbContext>(options =>
-                options.UseSqlServer(
-                    configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(
+        configuration.GetConnectionString("DefaultConnection")));
             services.AddIdentity<Customers, IdentityRole>(options => {
                 options.Password.RequireDigit = true;
                 options.Password.RequiredLength = 8;
@@ -41,7 +30,6 @@ namespace MarketIO.MVC.Instrallers
 
 
             }).AddEntityFrameworkStores<MarketIODbContext>().AddDefaultTokenProviders();
-            #endregion
         }
     }
 }

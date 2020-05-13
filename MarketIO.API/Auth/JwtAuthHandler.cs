@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace MarketIO.API.Auth
 {
-    public class JwtAuthHandler
+    public class JwtAuthHandler : IJwtAuthHandler
     {
         private readonly IConfiguration _configuration;
         public JwtAuthHandler(IConfiguration configuration)
@@ -25,7 +25,6 @@ namespace MarketIO.API.Auth
             
             _configuration.GetSection(nameof(JwtSettings)).Bind(_settings);
             var tokenHendler = new JwtSecurityTokenHandler();
-            var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_settings.Secret));
             var tokenDescriptor = new SecurityTokenDescriptor()
             {
                 Subject = new ClaimsIdentity(new[] {
@@ -33,11 +32,10 @@ namespace MarketIO.API.Auth
                     new Claim(ClaimTypes.Name, customer.UserName),
                     new Claim(ClaimTypes.Role, Role)
                 }),
-                Expires = DateTime.Now.AddMinutes(_settings.Expired),
                 Audience = _settings.Audience,
                 Issuer = _settings.Issuer,
-                SigningCredentials = new SigningCredentials(key ,SecurityAlgorithms.HmacSha256),
-                IssuedAt = DateTime.Now
+                Expires = DateTime.Now.AddDays(_settings.Expired),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_settings.Secret)) ,SecurityAlgorithms.HmacSha256)
                 
             };
 
