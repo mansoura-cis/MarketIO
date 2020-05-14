@@ -13,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MarketIO.BLL", "MarketIO.BL
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MarketIO.API", "MarketIO.API\MarketIO.API.csproj", "{3908EB1A-BD82-49D3-97F0-B4331DBE4899}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MarketIO.Contracts", "MarketIO.Contracts\MarketIO.Contracts.csproj", "{729498E0-B6D2-4ED6-9D97-BB6D7A07C95F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MarketIO.Contracts", "MarketIO.Contracts\MarketIO.Contracts.csproj", "{729498E0-B6D2-4ED6-9D97-BB6D7A07C95F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

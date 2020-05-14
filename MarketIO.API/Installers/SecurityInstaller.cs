@@ -1,12 +1,13 @@
-﻿using MarketIO.API.Auth;
-using MarketIO.API.Settings;
-using MarketIO.BLL.Repositories;
-using MarketIO.DAL.Repositories;
+﻿using MarketIO.API.Settings;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace MarketIO.API.Installers
 {
@@ -14,34 +15,34 @@ namespace MarketIO.API.Installers
     {
         public void InstallServices(IServiceCollection services, IConfiguration configuration)
         {
-            JwtSettings jwtSettings = new JwtSettings();
+            var jwtSettings = new JwtSettings();
             configuration.GetSection(nameof(JwtSettings)).Bind(jwtSettings);
-            byte[] key = Encoding.ASCII.GetBytes(jwtSettings.Secret);
+            services.AddAuthentication(options => {
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
 
-            services.AddAuthentication(schemes =>
-            {
-                schemes.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-                schemes.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                schemes.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             }).AddJwtBearer(options => {
                 options.SaveToken = true;
-                options.TokenValidationParameters = new TokenValidationParameters
+                options.TokenValidationParameters = new TokenValidationParameters()
                 {
                     ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(key),
                     ValidateIssuer = true,
-                    ValidateAudience = true, 
+                    ValidateAudience = true,
                     ValidIssuer = jwtSettings.Issuer,
-                    ValidateLifetime=true,
-                    ValidAudience = jwtSettings.Audience
+                    ValidAudience = jwtSettings.Audience,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtSettings.Secret)),
+                    RequireExpirationTime = true,
                 };
-            
+                options.Audience = jwtSettings.Audience;
+                options.ForwardSignIn = "Account/Login";
             });
 
-            services.AddAuthorization();
-
-
-
+            services.AddAuthorization(options => {
+                options.AddPolicy("RequireAdmin", policy => policy.RequireRole("Admin"));
+                options.AddPolicy("RequireUser", policy => policy.RequireRole("Admin" , "Moderator", "Customer"));
+            
+            });
         }
     }
 }

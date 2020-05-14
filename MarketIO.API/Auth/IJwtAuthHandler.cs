@@ -4,6 +4,6 @@ namespace MarketIO.API.Auth
 {
     public interface IJwtAuthHandler
     {
-        public string CreateToken(Customers customer, string Role);
+        public string GetSecurityToken(string Email, string Username, string Role);
     }
 }

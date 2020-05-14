@@ -11,8 +11,8 @@ namespace MarketIO.API.Installers
     {
         public void InstallServices(IServiceCollection services, IConfiguration configuration)
         {
-            services.AddTransient<IJwtAuthHandler, JwtAuthHandler>();
             services.AddTransient<IAccountRepository, AccountRepository>();
+            services.AddTransient<IJwtAuthHandler, JwtAuthHandler>();
         }
     }
 }

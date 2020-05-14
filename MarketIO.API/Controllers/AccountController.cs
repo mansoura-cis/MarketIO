@@ -28,12 +28,12 @@ namespace MarketIO.API.Controllers
            var result = await _account.CheckAuthority(model.Email, model.Password);
             if (result.Item1 != null)
             {
-                return Ok($"Bearer { _jwt.CreateToken(result.Item1, result.Item2.FirstOrDefault())} {DateTime.Now} ");
+                return Ok($"Bearer { _jwt.GetSecurityToken("Admin2@new.com", "Admin2", "Admin" )} ");
             }
             return Unauthorized("You are not Authorized");
         }
 
-        
+        [Authorize(Roles ="Admin")]
         [HttpGet(APIRoutes.Account.CheckLogin)]
         public IActionResult CheckLogin() => Ok("I am Authorized");
         

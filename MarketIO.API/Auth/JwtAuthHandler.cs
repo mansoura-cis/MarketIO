@@ -19,28 +19,29 @@ namespace MarketIO.API.Auth
             _configuration = configuration;
         }
 
-        public string CreateToken(Customers customer , string Role)
+        public string GetSecurityToken(string Email, string Username, string Role)
         {
             JwtSettings _settings = new JwtSettings();
-            
             _configuration.GetSection(nameof(JwtSettings)).Bind(_settings);
-            var tokenHendler = new JwtSecurityTokenHandler();
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes(_settings.Secret);
             var tokenDescriptor = new SecurityTokenDescriptor()
             {
                 Subject = new ClaimsIdentity(new[] {
-                    new Claim(ClaimTypes.Email, customer.Email),
-                    new Claim(ClaimTypes.Name, customer.UserName),
-                    new Claim(ClaimTypes.Role, Role)
+                    new Claim(ClaimTypes.Email, Email),
+                    new Claim(ClaimTypes.Name, Username),
+                    new Claim(ClaimTypes.Role, Role),
                 }),
-                Audience = _settings.Audience,
+                Expires = DateTime.Now.AddMinutes(_settings.Expired),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
                 Issuer = _settings.Issuer,
-                Expires = DateTime.Now.AddDays(_settings.Expired),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_settings.Secret)) ,SecurityAlgorithms.HmacSha256)
-                
-            };
+                Audience = _settings.Audience,
+                IssuedAt = DateTime.Now
 
-            var token = tokenHendler.CreateToken(tokenDescriptor);
-            return tokenHendler.WriteToken(token);
+            };
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            return tokenHandler.WriteToken(token);
+
         }
     }
 }

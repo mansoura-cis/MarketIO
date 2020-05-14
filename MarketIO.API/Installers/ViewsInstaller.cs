@@ -13,30 +13,38 @@ namespace MarketIO.API.Installers
     {
         public void InstallServices(IServiceCollection services, IConfiguration configuration)
         {
+
+            services.AddControllers();
             var swaggerSettings = new SwaggerSettings();
             configuration.GetSection(nameof(SwaggerSettings)).Bind(swaggerSettings);
-            services.AddSwaggerGen(settings => {
-                var security = new OpenApiSecurityRequirement() { 
-                    
-                };
-                var securityScheme = new OpenApiSecurityScheme()
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("V1", new OpenApiInfo
                 {
-                    Description = "Using Bearer Authorization",
-                    Name = "Authorization",
-                    In = ParameterLocation.Header,
-                    Type = SecuritySchemeType.ApiKey
-
-                };
-                security.Add(securityScheme, new List<string>() { });
-                settings.SwaggerDoc("V1", new Microsoft.OpenApi.Models.OpenApiInfo() { 
-                    Description = swaggerSettings.Description,
-                    Version = "V1",
-                    Title = "MarketIO"
+                    Title = "MarketIO",
+                    Version = "V1"
                 });
-                settings.AddSecurityDefinition("Bearer" , securityScheme);
-                settings.AddSecurityRequirement(security);
-            });
-            services.AddControllers();
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    In = ParameterLocation.Header,
+                    Description = "Please insert JWT with Bearer into field",
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.ApiKey
+                });
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement {
+                                                                            {
+                                   new OpenApiSecurityScheme
+                                             {
+                                               Reference = new OpenApiReference
+                                               {
+                                                 Type = ReferenceType.SecurityScheme,
+                                                 Id = "Bearer"
+                                               }
+                                              },
+                                              new string[] { }
+                                            }
+                                          });
+                                                    });
         }
 
 
