@@ -1,5 +1,11 @@
 ﻿@model IEnumerable<Products>
 
+@{
+    int index = (int)ViewBag.Index;
+    var prev = (index <= 1) ? "disabled" : "";
+    var nxt = (index >= ViewBag.TotalPages) ? "disabled" : "";
+}
+
 <h1>Products Management</h1>
 
 @if (!Model.Any())
@@ -29,10 +35,10 @@ else
         {
             <tr>
                 <td>@Product.Product_Id</td>
-                <td><img src="~/images/@Product.Image"style="width:45px;" asp-append-version="true" /></td>
+                <td><img src="~/images/@Product.Image" style="width:45px;" asp-append-version="true" /></td>
                 <td>@Product.P_Name</td>
                 <td><input type="checkbox" asp-for="@Product.InStock" />
-                <td>@Product.Price</td> 
+                <td>@Product.Price</td>
                 <td>@Product.Quantity</td>
                 <td>
                     <form asp-action="DeleteProduct" asp-route-ProductId="@Product.Product_Id" method="post">
@@ -46,3 +52,10 @@ else
         }
     </table>
 }
+
+<a asp-action="Index" asp-route-pageNumber="@(index - 1)" class="btn btn-primary @prev">
+    Previous
+</a>
+<a asp-action="Index" asp-route-pageNumber="@(index + 1)" class="btn btn-primary @nxt">
+    Next
+</a>

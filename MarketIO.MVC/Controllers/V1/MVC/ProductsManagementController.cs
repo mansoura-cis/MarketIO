@@ -25,9 +25,9 @@ namespace MarketIO.MVC.Controllers.V1.MVC
 
         public ProductsManagementController(IProductRepository productRepository
                                             , ICategoryRepository categoryRepository
-                                            ,IBrandRepository brandRepository,
+                                            , IBrandRepository brandRepository,
                                             IUploadFileRepository uploadFile
-                                            ,IWebHostEnvironment hostingEnvironment)
+                                            , IWebHostEnvironment hostingEnvironment)
         {
             this._productRepository = productRepository;
             this._categoryRepository = categoryRepository;
@@ -37,10 +37,14 @@ namespace MarketIO.MVC.Controllers.V1.MVC
         }
         // GET: /<controller>/
         [HttpGet(MVCRoutes.Moderator.Products.GetProducts)]
-        public IActionResult Index()
+        public IActionResult Index(int pageNumber = 1)
         {
+            int pageSize = 2;
             var products = _productRepository.AllProducts.OrderBy(p => p.P_Name);
-            return View(products);
+            var paganitedList = products.Skip((pageNumber - 1) * pageSize).Take(pageSize);
+            ViewBag.Index = pageNumber;
+            ViewBag.TotalPages = Math.Ceiling(products.Count() / (double)pageSize);
+            return View(paganitedList);
         }
 
         [HttpGet(MVCRoutes.Moderator.Products.CreateProduct)]
@@ -52,7 +56,7 @@ namespace MarketIO.MVC.Controllers.V1.MVC
             ProductEditViewModel productEditViewModel = new ProductEditViewModel
             {
                 Categories = categories.Select(c => new SelectListItem() { Text = c.Cat_Name, Value = c.Cat_Id.ToString() }).ToList(),
-                CategoryId = categories.FirstOrDefault().Cat_Id, 
+                CategoryId = categories.FirstOrDefault().Cat_Id,
                 Brands = brands.Select(b => new SelectListItem() { Text = b.Brand_Name, Value = b.Brand_Id.ToString() }).ToList(),
                 BrandId = brands.FirstOrDefault().Brand_Id
             };
@@ -62,7 +66,7 @@ namespace MarketIO.MVC.Controllers.V1.MVC
         [HttpPost(MVCRoutes.Moderator.Products.CreateProduct)]
         public IActionResult AddProduct(ProductEditViewModel productEditViewModel)
         {
-           
+
             if (ModelState.IsValid)
             {
                 productEditViewModel.Product.Image = uploadFile.ProcessUploadedFile(productEditViewModel.Photo, "Products"); ;
@@ -121,10 +125,10 @@ namespace MarketIO.MVC.Controllers.V1.MVC
             }
             if (ModelState.IsValid)
             {
-                if (ProductEditViewModel.Photo!=null)
+                if (ProductEditViewModel.Photo != null)
                 {
                     ProductEditViewModel.Product.Image = uploadFile.ProcessUploadedFile(ProductEditViewModel.Photo, "Products");
-                        //ProcessUploadedFile(ProductEditViewModel);
+                    //ProcessUploadedFile(ProductEditViewModel);
                 }
                 ProductEditViewModel.Product.BrandId = ProductEditViewModel.BrandId;
                 ProductEditViewModel.Product.CategoryId = ProductEditViewModel.CategoryId;
@@ -155,8 +159,8 @@ namespace MarketIO.MVC.Controllers.V1.MVC
         [HttpPost(MVCRoutes.Moderator.Products.DeleteProduct)]
         public IActionResult DeleteProduct(int ProductId)
         {
-            
-            _productRepository.DeleteProduct(ProductId ,hostingEnvironment.WebRootPath);
+
+            _productRepository.DeleteProduct(ProductId, hostingEnvironment.WebRootPath);
 
             return RedirectToAction(nameof(Index));
         }
